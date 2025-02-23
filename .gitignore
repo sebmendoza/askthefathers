@@ -1,10 +1,11 @@
-.DS_Store
 **/*.env
 *.env
 .env
-**/*.env
-*.env
-.env
-/server/__pycache__
 venv/
+*venv/
 **/venv/
+.DS_Store
+**/*.DS_Store
+*.DS_Store
+**/__pycache__/
+*.egg-info

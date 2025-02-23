@@ -1,4 +1,4 @@
-from chonkie import SentenceChunker, LateChunker
+from chonkie import SentenceChunker
 from llamaparser import getOnTheIncarnation
 
 
@@ -15,7 +15,7 @@ class Chunker:
     def __init__(self):
         docs = getOnTheIncarnation()
         self.docs = docs[3:64]
-        self.full_text = getAllText(docs)
+        self.full_text = getAllText(self.docs)
 
     def prepareChunks(self):
         chunker = SentenceChunker(

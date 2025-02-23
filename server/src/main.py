@@ -1,66 +1,39 @@
-import requests
-import json
-
-corpus_of_documents = [
-    "Take a leisurely walk in the park and enjoy the fresh air.",
-    "Visit a local museum and discover something new.",
-    "Attend a live music concert and feel the rhythm.",
-    "Go for a hike and admire the natural scenery.",
-    "Have a picnic with friends and share some laughs.",
-    "Explore a new cuisine by dining at an ethnic restaurant.",
-    "Take a yoga class and stretch your body and mind.",
-    "Join a local sports league and enjoy some friendly competition.",
-    "Attend a workshop or lecture on a topic you're interested in.",
-    "Visit an amusement park and ride the roller coasters."
-]
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from retrieval.retrieval import retrieve_from_chroma
+from llm.prompt import RAGPromptGenerator, hit_gemini
 
 
-def jaccard_similarity(query, document):
-    query = query.lower().split(" ")
-    document = document.lower().split(" ")
-    intersection = set(query).intersection(set(document))
-    union = set(query).union(set(document))
-    return len(intersection)/len(union)
+app = FastAPI()
 
 
-def return_response(user_input, corpus):
-    similarities = []
-    for doc in corpus:
-        similarity = jaccard_similarity(user_input, doc)
-        similarities.append(similarity)
-    return corpus_of_documents[similarities.index(max(similarities))]
+class Query(BaseModel):
+    text: str
 
 
-user_input = "I don't like to hike"
-relevant_document = return_response(user_input, corpus_of_documents)
-full_response = []
-# https://github.com/jmorganca/ollama/blob/main/docs/api.md
-prompt = """
-You are a bot that makes recommendations for activities. You answer in very short sentences and do not include extra information.
-This is the recommended activity: {relevant_document}
-The user input is: {user_input}
-Compile a recommendation to the user based on the recommended activity and the user input.
-"""
+class QueryResponse(BaseModel):
+    response: str
 
-url = 'http://localhost:11434/api/generate'
-data = {
-    "model": "llama3.2",
-    "prompt": prompt.format(user_input=user_input, relevant_document=relevant_document)
-}
-headers = {'Content-Type': 'application/json'}
-response = requests.post(url, data=json.dumps(data),
-                         headers=headers, stream=True)
-try:
-    count = 0
-    for line in response.iter_lines():
-        # filter out keep-alive new lines
-        # count += 1
-        # if count % 5== 0:
-        #     print(decoded_line['response']) # print every fifth token
-        if line:
-            decoded_line = json.loads(line.decode('utf-8'))
 
-            full_response.append(decoded_line['response'])
-finally:
-    response.close()
-print(''.join(full_response))
+@app.get("/")
+def status():
+    return {
+        "Status": "Alive"
+    }
+
+
+@app.post("/retrieve", response_model=QueryResponse)
+def handle_retrieval(query: Query):
+    try:
+        q = query.text
+        rag_results = retrieve_from_chroma(q)
+        # print("Rag:", rag_results)
+        prompt_generator = RAGPromptGenerator()
+        prompt = prompt_generator.generate_prompt(query, rag_results)
+        response = hit_gemini(prompt)
+        return QueryResponse(
+            response=response
+        )
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
