@@ -49,7 +49,7 @@ INSTRUCTIONS:
    - Provide a response based on what is known from the context
    - Avoid making assumptions beyond the provided information
 
-Please provide your response in a clear, well-structured format that best serves the user's needs. Your goal is to be helpful, accurate, and direct while making optimal use of the retrieved context.
+Please provide your response in a clear, well-structured format that best serves the user's needs. Your goal is to be helpful, accurate, and direct while making optimal use of the retrieved context. If you make a refercne to the context provided, add the exact qutations at the end of your reponse.
 
 Remember:
 - Stay within the scope of the provided context
