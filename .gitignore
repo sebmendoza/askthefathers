@@ -1,0 +1,10 @@
+.DS_Store
+**/*.env
+*.env
+.env
+**/*.env
+*.env
+.env
+/server/__pycache__
+venv/
+**/venv/

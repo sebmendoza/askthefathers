@@ -15,5 +15,5 @@ results: QueryResult = collection.query(
     n_results=3
 )
 # results = json.dumps(results, indent=2)
-with open("retrieval.json", "w", encoding="utf-8") as f:
+with open("./results/retrieval.json", "w", encoding="utf-8") as f:
     json.dump(results, f, ensure_ascii=False, indent=2)

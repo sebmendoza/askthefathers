@@ -1,15 +1,7 @@
 import chromadb
-from chromadb import QueryResult, Collection
 from chromadb.config import Settings
 from datetime import datetime
-from chunker import prepareChunks
-from llamaparser import Document
-
-
-def prepareData() -> tuple[list[str], list[str]]:
-    chunks = prepareChunks()
-    ids = [f"chunk_{i}" for i, _ in enumerate(chunks)]
-    return chunks, ids
+from chunker import Chunker
 
 
 if __name__ == "__main__":
@@ -20,10 +12,12 @@ if __name__ == "__main__":
         "description": "Collection on On The Incarnation",
         "created": str(datetime.now())}
     )
-    chunks, ids = prepareData()
-    # print(chunks)
-    # for i in range(40):
-    #     print(chunks[i], "\n\n\n\n")
+
+    # Prepare Data
+    c = Chunker()
+    chunks = c.prepareChunks()
+    ids = [f"chunk_{i}" for i, _ in enumerate(chunks)]
+
     collection.upsert(
         documents=chunks,
         ids=ids

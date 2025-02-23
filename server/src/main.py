@@ -14,12 +14,14 @@ corpus_of_documents = [
     "Visit an amusement park and ride the roller coasters."
 ]
 
+
 def jaccard_similarity(query, document):
     query = query.lower().split(" ")
     document = document.lower().split(" ")
     intersection = set(query).intersection(set(document))
     union = set(query).union(set(document))
     return len(intersection)/len(union)
+
 
 def return_response(user_input, corpus):
     similarities = []
@@ -46,7 +48,8 @@ data = {
     "prompt": prompt.format(user_input=user_input, relevant_document=relevant_document)
 }
 headers = {'Content-Type': 'application/json'}
-response = requests.post(url, data=json.dumps(data), headers=headers, stream=True)
+response = requests.post(url, data=json.dumps(data),
+                         headers=headers, stream=True)
 try:
     count = 0
     for line in response.iter_lines():
@@ -56,7 +59,7 @@ try:
         #     print(decoded_line['response']) # print every fifth token
         if line:
             decoded_line = json.loads(line.decode('utf-8'))
-            
+
             full_response.append(decoded_line['response'])
 finally:
     response.close()

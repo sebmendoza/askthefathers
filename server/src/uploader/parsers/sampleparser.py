@@ -2,11 +2,12 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 import re
 
+
 class ThMLParser:
     def __init__(self):
         self.metadata = {}
         self.sections = []
-        
+
     def split_into_sentences(self, text):
         """Split text into sentences using regex patterns"""
         # Pattern matches sentence endings while preserving abbreviations like "St.", "Mr.", etc.
@@ -24,7 +25,7 @@ class ThMLParser:
         """Parse ThML document and extract structured content"""
         # Clean up any XML declarations
         thml_content = re.sub(r'<\?xml.*?\?>', '', thml_content)
-        
+
         # Parse the XML
         try:
             root = ET.fromstring(thml_content)
@@ -79,9 +80,10 @@ class ThMLParser:
                             'level': element.tag[3] if len(element.tag) > 3 else '1'
                         }
                     })
-                
+
                 # Parse content within this division
-                self.parse_body(element, f"{current_path}/{element.get('n', '')}".strip('/'))
+                self.parse_body(
+                    element, f"{current_path}/{element.get('n', '')}".strip('/'))
             else:
                 # Process the content and break into sentences
                 content = self.process_element(element)
@@ -101,7 +103,7 @@ class ThMLParser:
     def process_element(self, element):
         """Process individual elements, preserving semantic information"""
         text = ''
-        
+
         # Handle element-specific processing
         if element.tag in ['scripRef', 'scripture', 'scripCom']:
             # Handle scripture references with their attributes
@@ -116,43 +118,45 @@ class ThMLParser:
             text += f"[{lang}: {element.text or ''}] "
         elif element.text:
             text += element.text + ' '
-            
+
         # Process child elements recursively
         for child in element:
             text += self.process_element(child)
             if child.tail:
                 text += child.tail + ' '
-                
+
         return text.strip()
 
     def get_chunks(self):
         """Return all chunks (titles and sentences) with their metadata"""
         return self.sections
 
+
 def process_thml_for_rag(thml_content):
     """Process ThML content and return chunks with metadata"""
     parser = ThMLParser()
     parsed_content = parser.parse_document(thml_content)
     chunks = parser.get_chunks()
-    
+
     return {
         'metadata': parsed_content['metadata'],    # Document-level metadata
         'chunks': chunks                          # Sentence-level chunks and titles
     }
 
+
 # Example usage
 if __name__ == "__main__":
     with open('../xmls/ignatius.xml', 'r') as file:
         thml_content = file.read()
-    
+
     processed = process_thml_for_rag(thml_content)
-    
+
     # Print document metadata
     print("\nDocument Metadata:")
     for key, value in processed['metadata'].items():
         if value:  # Only print non-empty metadata
             print(f"{key}: {value[:100]}...")  # Print first 100 chars of value
-    
+
     # Print some sample chunks
     print("\nSample Chunks:")
     for i, chunk in enumerate(processed['chunks'][5:]):  # Print first 5 chunks
