@@ -36,7 +36,7 @@ def test_retrieval():
         query_texts="kingdom",
         n_results=3
     )
-    print(results)
+    # print(results)
 
 
 if "__name__" == "__name__":

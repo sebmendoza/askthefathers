@@ -32,4 +32,4 @@ class Chunker:
 if __name__ == "__main__":
     c = Chunker()
     chunks = c.prepareChunks()
-    print(chunks[:10])
+    # print(chunks[:10])
