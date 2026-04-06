@@ -2,6 +2,8 @@
 
 Exploring Retrieval-Augmented Generation (RAG). This project uses a local embedding store of patristic texts and generates query responses from Gemini. Ambitions for this project include publicly releasing with MUCH more texts.
 
+![Screenshot of askthefathers interface](preview.png)
+
 ### Tools
 
 - Next.js — quick (though bloated) frontend to prototype a UI
