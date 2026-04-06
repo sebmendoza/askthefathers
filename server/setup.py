@@ -3,8 +3,12 @@ from setuptools import setup, find_packages
 setup(
     name="askthefathers",
     version="0.0",
+    package_dir={"": "src"},
     packages=find_packages(where="src"),
-    # package_dir={"": "src"},  # Tell setuptools where to find them
+    install_requires=[
+        "fastapi[standard]==0.135.3",
+        "chromadb",
+        "google-genai",
+        "python-dotenv",
+    ],
 )
-
-# Run `pip install -e .` from the /server/ directory

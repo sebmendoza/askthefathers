@@ -2,6 +2,16 @@
 import PromptButton from "@/components/PromptButton";
 import { useState, ChangeEvent } from "react";
 
+function renderMarkdown(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/\*(.+?)\*/g, "<em>$1</em>")
+    .replace(/`(.+?)`/g, "<code>$1</code>")
+    .replace(/\n/g, "<br />");
+}
+
 export default function Home() {
   const [responseText, setResponseText] = useState<string>("No Data");
   const [query, setQuery] = useState<string>("");
@@ -30,7 +40,10 @@ export default function Home() {
             Clear
           </button>
           <h3 className="text-xl font-medium">Response</h3>
-          <p className={`border ${responseText ? "border-blue-400" : ""}  flex-grow p-2 shadow-md`}>{responseText}</p>
+          <div
+            className={`border ${responseText ? "border-blue-400" : ""} flex-grow p-2 shadow-md`}
+            dangerouslySetInnerHTML={{ __html: renderMarkdown(responseText) }}
+          />
         </div>
       </div>
     </div>
